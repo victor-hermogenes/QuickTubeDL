@@ -90,6 +90,9 @@ def setup_main_window():
     root = tk.Tk()
     root.title("YouTube Video Downloader")
 
+    # Set the window icon
+    root.iconbitmap('icon.ico')
+
     # Set YouTube dark mode theme
     global bg_color, fg_color, button_bg_color, button_fg_color
     bg_color = "#181818"
@@ -98,6 +101,12 @@ def setup_main_window():
     button_fg_color = "#FFFFFF"
 
     root.configure(bg=bg_color)
+
+    # Add the icon image at the top
+    icon_img = tk.PhotoImage(file='icon.png')
+    icon_label = tk.Label(root, image=icon_img, bg=bg_color)
+    icon_label.image = icon_img    # Keep a reference to avoid garbage collection
+    icon_label.pack(pady=20)
 
     # Create a canvas for scrollable content
     canvas = Canvas(root, bg=bg_color)
