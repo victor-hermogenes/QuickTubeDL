@@ -11,16 +11,21 @@ import threading
 import os
 import time
 
+
+# Looking for directory to download
 def browse_directory():
     download_directory = filedialog.askdirectory(initialdir=".", title="Selecione pasta para download:")
     download_path.set(download_directory)
 
+
+# Video preview
 def display_video_info():
     url = video_url.get()
     if not url:
         messagebox.showerror("Erro:", "Link inválido, por favor tente novamente com outro link.")
         return
     
+    # Window setup to display video preview
     try:
         yt = YouTube(url)
         video_title = yt.title
@@ -43,12 +48,16 @@ def display_video_info():
         player = tkvideo(preview_path, video_label, loop=1, size=(400, 300))
         player.play()
 
+
+        # Command to run on close of display window to erase preview
         def on_close():
             # Ensure cleanup is done before closing the window
             player._kill_thread = True  # Ensure player stops
             video_info_window.destroy()
             root.after(100, cleanup_preview)
 
+        
+        # Cleanup routine to ensure on close command work
         def cleanup_preview():
             time.sleep(0.5)  # Allow some time for the player thread to finish
             try:
@@ -65,6 +74,8 @@ def display_video_info():
     except Exception as e:
         messagebox.showerror("Erro:", f"Ocorreu um erro: {e}")
 
+
+# Threading download to GUI not freeze
 def threaded_download(url, folder):
     try:
         yt = YouTube(url)
@@ -74,6 +85,8 @@ def threaded_download(url, folder):
     except Exception as e:
         messagebox.showerror("Erro:", f"Um erro aconteceu: {e}")
 
+
+# Choosing bin and downloading video.
 def download_video():
     url = video_url.get()
     folder = download_path.get()
@@ -87,6 +100,8 @@ def download_video():
     # Start the download in a new thread
     threading.Thread(target=threaded_download, args=(url, folder)).start()
 
+
+# Setup to main window
 def setup_main_window():
     global root
     root = tk.Tk()
@@ -153,6 +168,8 @@ def setup_main_window():
     # Run the GUI loop
     root.mainloop()
 
+
+# Centering icon for design purposes
 def center_image_in_canvas(canvas, image):
     # Calculate the center of the canvas
     canvas_width = canvas.winfo_width()
@@ -166,6 +183,8 @@ def center_image_in_canvas(canvas, image):
     # Place the image on the canvas
     canvas.create_image(x, y, anchor='nw', image=image)
 
+
+# Centering window to adjust for screen being used
 def center_window(window):
     window.update_idletasks()  # Ensure all geometry calculations are up to date
 
