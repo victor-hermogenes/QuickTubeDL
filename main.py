@@ -4,16 +4,15 @@ Made by Victor G. Hermogenes AKA Victor Galliardis.
 """
 
 import tkinter as tk
-from tkinter import filedialog, messagebox, Scrollbar, Toplevel, Canvas,Frame
+from tkinter import filedialog, messagebox, Scrollbar, Toplevel, Canvas, Frame
 from pytube import YouTube
 from tkvideo import tkvideo
+import threading
 import os
-
 
 def browse_directory():
     download_directory = filedialog.askdirectory(initialdir=".", title="Selecione pasta para download:")
     download_path.set(download_directory)
-
 
 def display_video_info():
     url = video_url.get()
@@ -43,13 +42,11 @@ def display_video_info():
         player = tkvideo(preview_path, video_label, loop=1, size=(400, 300))
         player.play()
 
-
         def on_close():
             # Ensure cleanup is done before closing the window
-            player._kill_thread = True # might get this workaround deleted later
+            player._kill_thread = True  # might get this workaround deleted later
             video_info_window.destroy()
             root.after(100, cleanup_preview)
-
 
         def cleanup_preview():
             try:
@@ -57,17 +54,23 @@ def display_video_info():
                     os.remove(preview_path)
             except Exception as e:
                 print(f"Erro em remover preview: {e}")
-        
 
         close_button = tk.Button(video_info_window, text="Fechar", command=on_close, bg=button_bg_color, fg=button_fg_color)
         close_button.pack(pady=10)
 
-
         video_info_window.protocol("WM_DELETE_WINDOW", on_close)
 
     except Exception as e:
-        messagebox.showerror("Erro:", f"Ocorreu um erro {e}")
+        messagebox.showerror("Erro:", f"Ocorreu um erro: {e}")
 
+def threaded_download(url, folder):
+    try:
+        yt = YouTube(url)
+        stream = yt.streams.get_highest_resolution()
+        stream.download(output_path=folder)
+        messagebox.showinfo("Sucesso!", f"Video importado com sucesso e salvo na pasta {folder}")
+    except Exception as e:
+        messagebox.showerror("Erro:", f"Um erro aconteceu: {e}")
 
 def download_video():
     url = video_url.get()
@@ -79,14 +82,8 @@ def download_video():
         messagebox.showerror("Error:", "Selecione pasta para download.")
         return
     
-    try:
-        yt = YouTube(url)
-        stream = yt.streams.get_highest_resolution()
-        stream.download(output_path=folder)
-        messagebox.showinfo("Sucesso!", f"Video importado com sucesso e salvo na pasta {folder}")
-    except Exception as e:
-        messagebox.showerror("Erro:", f"Um erro aconteceu: {e}")
-
+    # Start the download in a new thread
+    threading.Thread(target=threaded_download, args=(url, folder)).start()
 
 def setup_main_window():
     global root
@@ -154,7 +151,6 @@ def setup_main_window():
 
     # Run the GUI loop
     root.mainloop()
-
 
 def center_window(window):
     window.update_idletasks()  # Ensure all geometry calculations are up to date
