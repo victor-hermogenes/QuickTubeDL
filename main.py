@@ -1,5 +1,6 @@
 """
 Creating simple UI with function to download videos from youtube.
+Made by Victor G. Hermogenes AKA Victor Galliardis.
 """
 
 import tkinter as tk
