@@ -4,11 +4,12 @@ Made by Victor G. Hermogenes AKA Victor Galliardis.
 """
 
 import tkinter as tk
-from tkinter import filedialog, messagebox, Scrollbar, Toplevel, Canvas, Frame
+from tkinter import filedialog, messagebox, Toplevel, Canvas, Frame
 from pytube import YouTube
 from tkvideo import tkvideo
 import threading
 import os
+import time
 
 def browse_directory():
     download_directory = filedialog.askdirectory(initialdir=".", title="Selecione pasta para download:")
@@ -44,11 +45,12 @@ def display_video_info():
 
         def on_close():
             # Ensure cleanup is done before closing the window
-            player._kill_thread = True  # might get this workaround deleted later
+            player._kill_thread = True  # Ensure player stops
             video_info_window.destroy()
             root.after(100, cleanup_preview)
 
         def cleanup_preview():
+            time.sleep(0.5)  # Allow some time for the player thread to finish
             try:
                 if os.path.exists(preview_path):
                     os.remove(preview_path)
