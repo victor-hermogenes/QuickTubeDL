@@ -12,13 +12,13 @@ import os
 import time
 
 
-def browse_directory():
+def browse_directory() -> None:
     """Looking for directory to download"""
     download_directory = filedialog.askdirectory(initialdir=".", title="Selecione pasta para download:")
     download_path.set(download_directory)
 
 
-def display_video_info():
+def display_video_info() -> None:
     """Video preview setup"""
     url = video_url.get()
     if not url:
@@ -49,7 +49,7 @@ def display_video_info():
         player.play()
 
 
-        def on_close():
+        def on_close() -> None:
             """Command to run on close of display window to erase preview"""
             """Ensure cleanup is done before closing the window"""
             player._kill_thread = True  # Ensure player stops
@@ -57,7 +57,7 @@ def display_video_info():
             root.after(100, cleanup_preview)
 
         
-        def cleanup_preview():
+        def cleanup_preview() -> None:
             """Cleanup routine to ensure on close command work"""
             time.sleep(0.5)  # Allow some time for the player thread to finish
             try:
@@ -75,7 +75,7 @@ def display_video_info():
         messagebox.showerror("Erro:", f"Ocorreu um erro: {e}")
 
 
-def threaded_download(url, folder):
+def threaded_download(url: str, folder: str):
     """Threading download to GUI not freeze"""
     try:
         yt = YouTube(url)
@@ -86,7 +86,7 @@ def threaded_download(url, folder):
         messagebox.showerror("Erro:", f"Um erro aconteceu: {e}")
 
 
-def download_video():
+def download_video() -> None:
     """Choosing bin and downloading video."""
     url = video_url.get()
     folder = download_path.get()
@@ -101,7 +101,7 @@ def download_video():
     threading.Thread(target=threaded_download, args=(url, folder)).start()
 
 
-def setup_main_window():
+def setup_main_window() -> None:
     """Setup to main window"""
     global root
     root = tk.Tk()
@@ -170,7 +170,7 @@ def setup_main_window():
 
 
 # Centering icon for design purposes
-def center_image_in_canvas(canvas, image):
+def center_image_in_canvas(canvas: Canvas, image: tk.PhotoImage):
     # Calculate the center of the canvas
     canvas_width = canvas.winfo_width()
     canvas_height = canvas.winfo_height()
@@ -185,7 +185,7 @@ def center_image_in_canvas(canvas, image):
 
 
 # Centering window to adjust for screen being used
-def center_window(window):
+def center_window(window: tk.Tk):
     window.update_idletasks()  # Ensure all geometry calculations are up to date
 
     # Get the screen dimensions
