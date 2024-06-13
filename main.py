@@ -4,7 +4,7 @@ Made by Victor G. Hermogenes AKA Victor Galliardis.
 """
 
 import tkinter as tk
-from tkinter import filedialog, messagebox, Toplevel
+from tkinter import filedialog, messagebox, Scrollbar, Toplevel, Canvas, Frame
 from pytube import YouTube
 from tkvideo import tkvideo
 import os
@@ -88,35 +88,30 @@ def download_video():
         messagebox.showerror("Erro:", f"Um erro aconteceu: {e}")
 
 
-def center_window(window, width=500, height=200):
-    window.update_idletasks() # Ensre all geometry calculations are up to date
+def center_window(window):
+    window.update_idletasks() # Ensure all geometry calculations are up to date
 
-    # calculate required height and width
-    widget_heights = sum(widget.winfo_height() for widget in window.winfo_children())
-    widget_widths = max(widget.winfo_width() for widget in window.winfo_children())
-
-    # Add padding and extra space for margins
-    padding = 20 # Adjust as necesary for aesthetics
-    total_height = widget_heights + padding
-    total_width = widget_widths + padding
-
-    # Get screen dimensions
+    # Get the screen dimensions
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
 
+    # calculate the window size
+    window_width = min(screen_width, window.winfo_reqwidth())
+    window_height = min(screen_height, window.winfo_reqheight())
+
     # Calculate position to center the window
-    x = (screen_width // 2) - (total_width // 2)
-    y = (screen_height // 2) - (total_height // 2)
+    x = (screen_height // 2) - (window_width // 2)
+    y = (screen_height // 2) - (window_height // 2)
 
     # Set window geometry
-    window.geometry(f'{total_width}x{total_height}+{x}+{y}')
+    window.geometry(f'{window_width}x{window_height}+{x}+{y}')
 
 
 # Adjust the window setup in the main code
 def setup_main_window():
     global root
-    root = tk.Tk
-    root.title("youTube Video Downloader")
+    root = tk.Tk()
+    root.title("YouTube Video Downloader")
 
     # set youTube dark mode theme
     bg_color = "#181818"
@@ -126,16 +121,31 @@ def setup_main_window():
 
     root.configure(bg=bg_color)
 
+    # Create a canvas with a scrollbar
+    canvas = Canvas(root, bg=bg_color)
+    scrollbar = Scrollbar(root, orient="vertical", command=canvas.yview)
+    scrollable_frame = Frame(canvas, bg=bg_color)
+
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, ancho="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
     # Create and set variables
     global video_url, download_path
     video_url = tk.StringVar()
     download_path = tk.StringVar()
 
     # URL label and entry
-    url_label = tk.label(root, text="link do YouTube:", bg=bg_color, fg=fg_color)
+    url_label = tk.Label(root, text="link do YouTube:", bg=bg_color, fg=fg_color)
     url_label.pack(pady=5)
     url_entry = tk.Entry(root, textvariable=video_url, width=50)
-    url_entry.pacl(pady=5)
+    url_entry.pack(pady=5)
 
     # Display video info button
     info_button = tk.Button(root, text="Informações do video", command=display_video_info, bg=button_bg_color, fg=button_fg_color)
@@ -153,7 +163,12 @@ def setup_main_window():
     download_button = tk.Button(root, text="Download", command=download_video, bg=button_bg_color, fg=button_fg_color)
     download_button.pack(pady=5)
 
+    # pack the canvas and scrollbar
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+
     # center the window after all widgets are packed
+    root.update_idletasks()
     center_window(root)
 
     # Run the GUI loop
