@@ -102,27 +102,17 @@ def setup_main_window():
 
     root.configure(bg=bg_color)
 
-    # Add the icon image at the top
-    icon_img = tk.PhotoImage(file='icon.png')
-    icon_label = tk.Label(root, image=icon_img, bg=bg_color)
-    icon_label.image = icon_img    # Keep a reference to avoid garbage collection
-    icon_label.pack(pady=20)
-
-    # Create a canvas for scrollable content
+    # Create a canvas for background image
     canvas = Canvas(root, bg=bg_color)
-    scrollbar = Scrollbar(root, orient="vertical", command=canvas.yview)
-    scrollbar.pack(side="right", fill="y")
-    canvas.pack(side="left", fill="both", expand=True)
+    canvas.pack(fill="both", expand=True)
 
-    scrollable_frame = Frame(canvas, bg=bg_color)
-    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    # Load the background image
+    bg_image = tk.PhotoImage(file='icon.png')
+    canvas.bg_image = bg_image  # Keep a reference to avoid garbage collection
 
-    scrollable_frame.bind(
-        "<Configure>",
-        lambda e: canvas.configure(
-            scrollregion=canvas.bbox("all")
-        )
-    )
+    # Get the dimensions of the image
+    img_width = bg_image.width()
+    img_height = bg_image.height()
 
     # Create and set variables
     global video_url, download_path
@@ -130,36 +120,49 @@ def setup_main_window():
     download_path = tk.StringVar()
 
     # URL label and entry
-    url_label = tk.Label(scrollable_frame, text="Link do YouTube:", bg=bg_color, fg=fg_color)
+    url_label = tk.Label(canvas, text="Link do YouTube:", bg=bg_color, fg=fg_color)
     url_label.pack(pady=5)
-    url_entry = tk.Entry(scrollable_frame, textvariable=video_url, width=50)
+    url_entry = tk.Entry(canvas, textvariable=video_url, width=50)
     url_entry.pack(pady=5)
 
     # Display video info button
-    info_button = tk.Button(scrollable_frame, text="Informações do video", command=display_video_info, bg=button_bg_color, fg=button_fg_color)
+    info_button = tk.Button(canvas, text="Informações do video", command=display_video_info, bg=button_bg_color, fg=button_fg_color)
     info_button.pack(pady=5)
 
     # Browse button and entry
-    path_label = tk.Label(scrollable_frame, text="Caminho do Download:", bg=bg_color, fg=fg_color)
+    path_label = tk.Label(canvas, text="Caminho do Download:", bg=bg_color, fg=fg_color)
     path_label.pack(pady=5)
-    path_entry = tk.Entry(scrollable_frame, textvariable=download_path, width=50)
+    path_entry = tk.Entry(canvas, textvariable=download_path, width=50)
     path_entry.pack(pady=5)
-    browse_button = tk.Button(scrollable_frame, text="Procurar", command=browse_directory, bg=button_bg_color, fg=button_fg_color)
+    browse_button = tk.Button(canvas, text="Procurar", command=browse_directory, bg=button_bg_color, fg=button_fg_color)
     browse_button.pack(pady=5)
 
     # Download button
-    download_button = tk.Button(scrollable_frame, text="Download", command=download_video, bg=button_bg_color, fg=button_fg_color)
+    download_button = tk.Button(canvas, text="Download", command=download_video, bg=button_bg_color, fg=button_fg_color)
     download_button.pack(pady=5)
-
-    # Center the inner frame
-    scrollable_frame.pack(expand=True)
 
     # Center the window after all widgets are packed
     root.update_idletasks()  # Ensure all geometry calculations are up to date
     center_window(root)
 
+    # Add the background image to the canvas, centered
+    center_image_in_canvas(canvas, bg_image)
+
     # Run the GUI loop
     root.mainloop()
+
+def center_image_in_canvas(canvas, image):
+    # Calculate the center of the canvas
+    canvas_width = canvas.winfo_width()
+    canvas_height = canvas.winfo_height()
+    img_width = image.width()
+    img_height = image.height()
+
+    x = (canvas_width - img_width) // 2
+    y = (canvas_height - img_height) // 2
+
+    # Place the image on the canvas
+    canvas.create_image(x, y, anchor='nw', image=image)
 
 def center_window(window):
     window.update_idletasks()  # Ensure all geometry calculations are up to date
@@ -178,6 +181,7 @@ def center_window(window):
 
     # Set window geometry
     window.geometry(f'{window_width}x{window_height}+{x}+{y}')
+
 
 # Initialize the main window
 setup_main_window()
