@@ -4,7 +4,7 @@ Made by Victor G. Hermogenes AKA Victor Galliardis.
 """
 
 import tkinter as tk
-from tkinter import filedialog, messagebox, Scrollbar, Toplevel, Canvas, Frame
+from tkinter import filedialog, messagebox, Scrollbar, Toplevel, Canvas,Frame
 from pytube import YouTube
 from tkvideo import tkvideo
 import os
@@ -88,32 +88,13 @@ def download_video():
         messagebox.showerror("Erro:", f"Um erro aconteceu: {e}")
 
 
-def center_window(window):
-    window.update_idletasks() # Ensure all geometry calculations are up to date
-
-    # Get the screen dimensions
-    screen_width = window.winfo_screenwidth()
-    screen_height = window.winfo_screenheight()
-
-    # calculate the window size
-    window_width = min(screen_width, window.winfo_reqwidth())
-    window_height = min(screen_height, window.winfo_reqheight())
-
-    # Calculate position to center the window
-    x = (screen_height // 2) - (window_width // 2)
-    y = (screen_height // 2) - (window_height // 2)
-
-    # Set window geometry
-    window.geometry(f'{window_width}x{window_height}+{x}+{y}')
-
-
-# Adjust the window setup in the main code
 def setup_main_window():
     global root
     root = tk.Tk()
     root.title("YouTube Video Downloader")
 
-    # set youTube dark mode theme
+    # Set YouTube dark mode theme
+    global bg_color, fg_color, button_bg_color, button_fg_color
     bg_color = "#181818"
     fg_color = "#FFFFFF"
     button_bg_color = "#282828"
@@ -121,10 +102,14 @@ def setup_main_window():
 
     root.configure(bg=bg_color)
 
-    # Create a canvas with a scrollbar
+    # Create a canvas for scrollable content
     canvas = Canvas(root, bg=bg_color)
     scrollbar = Scrollbar(root, orient="vertical", command=canvas.yview)
+    scrollbar.pack(side="right", fill="y")
+    canvas.pack(side="left", fill="both", expand=True)
+
     scrollable_frame = Frame(canvas, bg=bg_color)
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 
     scrollable_frame.bind(
         "<Configure>",
@@ -133,47 +118,61 @@ def setup_main_window():
         )
     )
 
-    canvas.create_window((0, 0), window=scrollable_frame, ancho="nw")
-    canvas.configure(yscrollcommand=scrollbar.set)
-
     # Create and set variables
     global video_url, download_path
     video_url = tk.StringVar()
     download_path = tk.StringVar()
 
     # URL label and entry
-    url_label = tk.Label(root, text="link do YouTube:", bg=bg_color, fg=fg_color)
+    url_label = tk.Label(scrollable_frame, text="Link do YouTube:", bg=bg_color, fg=fg_color)
     url_label.pack(pady=5)
-    url_entry = tk.Entry(root, textvariable=video_url, width=50)
+    url_entry = tk.Entry(scrollable_frame, textvariable=video_url, width=50)
     url_entry.pack(pady=5)
 
     # Display video info button
-    info_button = tk.Button(root, text="Informações do video", command=display_video_info, bg=button_bg_color, fg=button_fg_color)
+    info_button = tk.Button(scrollable_frame, text="Informações do video", command=display_video_info, bg=button_bg_color, fg=button_fg_color)
     info_button.pack(pady=5)
 
     # Browse button and entry
-    path_label = tk.Label(root, text="Caminho do Download:", bg=bg_color, fg=fg_color)
+    path_label = tk.Label(scrollable_frame, text="Caminho do Download:", bg=bg_color, fg=fg_color)
     path_label.pack(pady=5)
-    path_entry = tk.Entry(root, textvariable=download_path, width=50)
+    path_entry = tk.Entry(scrollable_frame, textvariable=download_path, width=50)
     path_entry.pack(pady=5)
-    browse_button = tk.Button(root, text="Procurar", command=browse_directory, bg=button_bg_color, fg=button_fg_color)
+    browse_button = tk.Button(scrollable_frame, text="Procurar", command=browse_directory, bg=button_bg_color, fg=button_fg_color)
     browse_button.pack(pady=5)
 
     # Download button
-    download_button = tk.Button(root, text="Download", command=download_video, bg=button_bg_color, fg=button_fg_color)
+    download_button = tk.Button(scrollable_frame, text="Download", command=download_video, bg=button_bg_color, fg=button_fg_color)
     download_button.pack(pady=5)
 
-    # pack the canvas and scrollbar
-    canvas.pack(side="left", fill="both", expand=True)
-    scrollbar.pack(side="right", fill="y")
+    # Center the inner frame
+    scrollable_frame.pack(expand=True)
 
-    # center the window after all widgets are packed
-    root.update_idletasks()
+    # Center the window after all widgets are packed
+    root.update_idletasks()  # Ensure all geometry calculations are up to date
     center_window(root)
 
     # Run the GUI loop
     root.mainloop()
 
+
+def center_window(window):
+    window.update_idletasks()  # Ensure all geometry calculations are up to date
+
+    # Get the screen dimensions
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+
+    # Calculate the window size
+    window_width = min(screen_width, window.winfo_reqwidth())
+    window_height = min(screen_height, window.winfo_reqheight())
+
+    # Calculate position to center the window
+    x = (screen_width // 2) - (window_width // 2)
+    y = (screen_height // 2) - (window_height // 2)
+
+    # Set window geometry
+    window.geometry(f'{window_width}x{window_height}+{x}+{y}')
 
 # Initialize the main window
 setup_main_window()
