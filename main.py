@@ -12,14 +12,14 @@ import os
 import time
 
 
-# Looking for directory to download
 def browse_directory():
+    """Looking for directory to download"""
     download_directory = filedialog.askdirectory(initialdir=".", title="Selecione pasta para download:")
     download_path.set(download_directory)
 
 
-# Video preview
 def display_video_info():
+    """Video preview setup"""
     url = video_url.get()
     if not url:
         messagebox.showerror("Erro:", "Link inválido, por favor tente novamente com outro link.")
@@ -49,16 +49,16 @@ def display_video_info():
         player.play()
 
 
-        # Command to run on close of display window to erase preview
         def on_close():
-            # Ensure cleanup is done before closing the window
+            """Command to run on close of display window to erase preview"""
+            """Ensure cleanup is done before closing the window"""
             player._kill_thread = True  # Ensure player stops
             video_info_window.destroy()
             root.after(100, cleanup_preview)
 
         
-        # Cleanup routine to ensure on close command work
         def cleanup_preview():
+            """Cleanup routine to ensure on close command work"""
             time.sleep(0.5)  # Allow some time for the player thread to finish
             try:
                 if os.path.exists(preview_path):
@@ -75,8 +75,8 @@ def display_video_info():
         messagebox.showerror("Erro:", f"Ocorreu um erro: {e}")
 
 
-# Threading download to GUI not freeze
 def threaded_download(url, folder):
+    """Threading download to GUI not freeze"""
     try:
         yt = YouTube(url)
         stream = yt.streams.get_highest_resolution()
@@ -86,8 +86,8 @@ def threaded_download(url, folder):
         messagebox.showerror("Erro:", f"Um erro aconteceu: {e}")
 
 
-# Choosing bin and downloading video.
 def download_video():
+    """Choosing bin and downloading video."""
     url = video_url.get()
     folder = download_path.get()
     if not url:
@@ -97,20 +97,20 @@ def download_video():
         messagebox.showerror("Error:", "Selecione pasta para download.")
         return
     
-    # Start the download in a new thread
+    """Start the download in a new thread"""
     threading.Thread(target=threaded_download, args=(url, folder)).start()
 
 
-# Setup to main window
 def setup_main_window():
+    """Setup to main window"""
     global root
     root = tk.Tk()
     root.title("YouTube Video Downloader")
 
-    # Set the window icon
+    """Set the window icon"""
     root.iconbitmap('icon.ico')
 
-    # Set YouTube dark mode theme
+    """Set YouTube dark mode theme"""
     global bg_color, fg_color, button_bg_color, button_fg_color
     bg_color = "#181818"
     fg_color = "#FFFFFF"
@@ -119,34 +119,34 @@ def setup_main_window():
 
     root.configure(bg=bg_color)
 
-    # Create a canvas for background image
+    """Create a canvas for background image"""
     canvas = Canvas(root, bg=bg_color)
     canvas.pack(fill="both", expand=True)
 
-    # Load the background image
+    """Load the background image"""
     bg_image = tk.PhotoImage(file='icon.png')
     canvas.bg_image = bg_image  # Keep a reference to avoid garbage collection
 
-    # Get the dimensions of the image
+    """Get the dimensions of the image"""
     img_width = bg_image.width()
     img_height = bg_image.height()
 
-    # Create and set variables
+    """Create and set variables"""
     global video_url, download_path
     video_url = tk.StringVar()
     download_path = tk.StringVar()
 
-    # URL label and entry
+    """URL label and entry"""
     url_label = tk.Label(canvas, text="Link do YouTube:", bg=bg_color, fg=fg_color)
     url_label.pack(pady=5)
     url_entry = tk.Entry(canvas, textvariable=video_url, width=50)
     url_entry.pack(pady=5)
 
-    # Display video info button
+    """Display video info button"""
     info_button = tk.Button(canvas, text="Informações do video", command=display_video_info, bg=button_bg_color, fg=button_fg_color)
     info_button.pack(pady=5)
 
-    # Browse button and entry
+    """Browse button and entry"""
     path_label = tk.Label(canvas, text="Caminho do Download:", bg=bg_color, fg=fg_color)
     path_label.pack(pady=5)
     path_entry = tk.Entry(canvas, textvariable=download_path, width=50)
@@ -154,18 +154,18 @@ def setup_main_window():
     browse_button = tk.Button(canvas, text="Procurar", command=browse_directory, bg=button_bg_color, fg=button_fg_color)
     browse_button.pack(pady=5)
 
-    # Download button
+    """Download button"""
     download_button = tk.Button(canvas, text="Download", command=download_video, bg=button_bg_color, fg=button_fg_color)
     download_button.pack(pady=5)
 
-    # Center the window after all widgets are packed
+    """Center the window after all widgets are packed"""
     root.update_idletasks()  # Ensure all geometry calculations are up to date
     center_window(root)
 
-    # Add the background image to the canvas, centered
+    """Add the background image to the canvas, centered"""
     center_image_in_canvas(canvas, bg_image)
 
-    # Run the GUI loop
+    """Run the GUI loop"""
     root.mainloop()
 
 
