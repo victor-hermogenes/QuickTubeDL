@@ -89,54 +89,76 @@ def download_video():
 
 
 def center_window(window, width=500, height=200):
+    window.update_idletasks() # Ensre all geometry calculations are up to date
+
+    # calculate required height and width
+    widget_heights = sum(widget.winfo_height() for widget in window.winfo_children())
+    widget_widths = max(widget.winfo_width() for widget in window.winfo_children())
+
+    # Add padding and extra space for margins
+    padding = 20 # Adjust as necesary for aesthetics
+    total_height = widget_heights + padding
+    total_width = widget_widths + padding
+
+    # Get screen dimensions
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
 
-    x = (screen_width // 2) - (width // 2)
-    y = (screen_height // 2) - (height // 2)
+    # Calculate position to center the window
+    x = (screen_width // 2) - (total_width // 2)
+    y = (screen_height // 2) - (total_height // 2)
 
-    window.geometry(f'{width}x{height}+{x}+{y}')
+    # Set window geometry
+    window.geometry(f'{total_width}x{total_height}+{x}+{y}')
+
+
+# Adjust the window setup in the main code
+def setup_main_window():
+    global root
+    root = tk.Tk
+    root.title("youTube Video Downloader")
+
+    # set youTube dark mode theme
+    bg_color = "#181818"
+    fg_color = "#FFFFFF"
+    button_bg_color = "#282828"
+    button_fg_color = "#FFFFFF"
+
+    root.configure(bg=bg_color)
+
+    # Create and set variables
+    global video_url, download_path
+    video_url = tk.StringVar()
+    download_path = tk.StringVar()
+
+    # URL label and entry
+    url_label = tk.label(root, text="link do YouTube:", bg=bg_color, fg=fg_color)
+    url_label.pack(pady=5)
+    url_entry = tk.Entry(root, textvariable=video_url, width=50)
+    url_entry.pacl(pady=5)
+
+    # Display video info button
+    info_button = tk.Button(root, text="Informações do video", command=display_video_info, bg=button_bg_color, fg=button_fg_color)
+    info_button.pack(pady=5)
+
+    # Browse button and entry
+    path_label = tk.Label(root, text="Caminho do Download:", bg=bg_color, fg=fg_color)
+    path_label.pack(pady=5)
+    path_entry = tk.Entry(root, textvariable=download_path, width=50)
+    path_entry.pack(pady=5)
+    browse_button = tk.Button(root, text="Procurar", command=browse_directory, bg=button_bg_color, fg=button_fg_color)
+    browse_button.pack(pady=5)
+
+    # Download button
+    download_button = tk.Button(root, text="Download", command=download_video, bg=button_bg_color, fg=button_fg_color)
+    download_button.pack(pady=5)
+
+    # center the window after all widgets are packed
+    center_window(root)
+
+    # Run the GUI loop
+    root.mainloop()
+
 
 # Initialize the main window
-root =  tk.Tk()
-root.title("YouTube Video Downloader")
-
-# Center the window
-center_window(root, 500, 200)
-
-# Set YouTube dark mode theme
-bg_color = "#181818"
-fg_color = "#FFFFFF"
-button_bg_color = "#282828"
-button_fg_color = "#FFFFFF"
-
-root.configure(bg=bg_color)
-
-# Create and set variables
-video_url = tk.StringVar()
-download_path = tk.StringVar()
-
-# URL label and entry
-url_label = tk.Label(root, text="Link do YouTube:", bg=bg_color, fg=fg_color)
-url_label.pack(pady=5)
-url_entry = tk.Entry(root, textvariable=video_url, width=50)
-url_entry.pack(pady=5)
-
-# Display video info button
-info_button = tk.Button(root, text="Informações do video", command=display_video_info, bg=button_bg_color, fg=button_fg_color)
-info_button.pack(pady=5)
-
-# Browse button and entry
-path_label = tk.Label(root, text="Caminho do Download:", bg=bg_color, fg=fg_color)
-path_label.pack(pady=5)
-path_entry = tk.Entry(root, textvariable=download_path, width=50)
-path_entry.pack(pady=5)
-browse_button = tk.Button(root, text="Procurar", command=browse_directory, bg=button_bg_color, fg=button_fg_color)
-browse_button.pack(pady=5)
-
-# Download button
-download_button = tk.Button(root, text="Download", command=download_video, bg=button_bg_color, fg=button_fg_color)
-download_button.pack(pady=5)
-
-# Run the GUI loop
-root.mainloop()
+setup_main_window()
