@@ -25,7 +25,7 @@ def display_video_info():
         messagebox.showerror("Erro:", "Link inválido, por favor tente novamente com outro link.")
         return
     
-    # Window setup to display video preview
+    """Window setup to display video preview"""
     try:
         yt = YouTube(url)
         video_title = yt.title
@@ -38,11 +38,11 @@ def display_video_info():
         title_label = tk.Label(video_info_window, text=video_title, bg=button_bg_color, fg=fg_color, wraplength=400)
         title_label.pack(pady=10)
 
-        # Download the video for preview purposes
+        """Download the video for preview purposes"""
         preview_path = "./preview.mp4"
         stream.download(filename=preview_path)
 
-        # Display the video preview
+        """Display the video preview"""
         video_label = tk.Label(video_info_window)
         video_label.pack(pady=10)
         player = tkvideo(preview_path, video_label, loop=1, size=(400, 300))
