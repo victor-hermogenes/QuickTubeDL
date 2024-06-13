@@ -127,10 +127,6 @@ def setup_main_window() -> None:
     bg_image = tk.PhotoImage(file='icon.png')
     canvas.bg_image = bg_image  # Keep a reference to avoid garbage collection
 
-    """Get the dimensions of the image"""
-    img_width = bg_image.width()
-    img_height = bg_image.height()
-
     """Create and set variables"""
     global video_url, download_path
     video_url = tk.StringVar()
