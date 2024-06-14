@@ -107,7 +107,7 @@ def setup_main_window() -> None:
     """Setup to main window"""
     global root
     root = tk.Tk()
-    root.title("YouTube Video Downloader")
+    root.title("QuickTubeDL")
 
     """Set the window icon"""
     root.iconbitmap('icon.ico')
