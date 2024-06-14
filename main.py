@@ -10,6 +10,7 @@ from tkvideo import tkvideo
 import threading
 import os
 import time
+import tempfile
 
 
 def browse_directory() -> None:
@@ -38,8 +39,9 @@ def display_video_info() -> None:
         title_label = tk.Label(video_info_window, text=video_title, bg=button_bg_color, fg=fg_color, wraplength=400)
         title_label.pack(pady=10)
 
-        """Download the video for preview purposes"""
-        preview_path = "./preview.mp4"
+        # Use a temporary directory for preview files
+        temp_dir = tempfile.gettempdir()
+        preview_path = os.path.join(temp_dir, "preview.mp4")
         stream.download(filename=preview_path)
 
         """Display the video preview"""
