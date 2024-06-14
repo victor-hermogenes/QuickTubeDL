@@ -156,6 +156,10 @@ def setup_main_window() -> None:
     download_button = tk.Button(canvas, text="Download", command=download_video, bg=button_bg_color, fg=button_fg_color)
     download_button.pack(pady=5)
 
+    """Maker's signature"""
+    signature_label = tk.Label(canvas, text="Feito por Victor Galliardis", bg=bg_color, fg=fg_color)
+    signature_label.pack(side='left', anchor='s', padx=10, pady=10)
+
     """Center the window after all widgets are packed"""
     root.update_idletasks()  # Ensure all geometry calculations are up to date
     center_window(root)
